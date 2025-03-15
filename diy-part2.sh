@@ -31,13 +31,15 @@ sed -i "8i uci set network.wan.dns='192.168.0.253'" ./package/lean/default-setti
 # WAN6
 sed -i "9i uci set network.wan6.device='eth0'" ./package/lean/default-settings/files/zzz-default-settings  # 网络端口
 sed -i "10i uci set network.wan6.proto='dhcp'" ./package/lean/default-settings/files/zzz-default-settings  # dhcp
-
 # LAN
 sed -i "11i uci set network.lan.ipaddr='192.168.255.1'" ./package/lean/default-settings/files/zzz-default-settings  # 默认 IP 地址
 sed -i "12i uci set network.lan.proto='static'" ./package/lean/default-settings/files/zzz-default-settings # 静态 IP
 sed -i "13i uci set network.lan.device='eth1'" ./package/lean/default-settings/files/zzz-default-settings  # 网络端口
 sed -i "14i uci set network.lan.netmask='255.255.255.0'" ./package/lean/default-settings/files/zzz-default-settings    # 子网掩码
+sed -i "15i uci delete network.lan.ip6assign" ./package/lean/default-settings/files/zzz-default-settings    # 禁用lan口ipv6分配
 # br-lan
-sed -i "15i uci delete network.@device[0]" ./package/lean/default-settings/files/zzz-default-settings    # 删除br-lan设备
+sed -i "16i uci delete network.@device[0]" ./package/lean/default-settings/files/zzz-default-settings    # 删除br-lan设备
 
-sed -i "16i uci commit network\n" ./package/lean/default-settings/files/zzz-default-settings
+sed -i "17i uci commit network\n" ./package/lean/default-settings/files/zzz-default-settings
+# 加入编译信息
+sed -i "s/LEDE /WWW build $(TZ=UTC-8 date "+%Y.%m.%d") @ LEDE /g" package/lean/default-settings/files/zzz-default-settings
