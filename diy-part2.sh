@@ -30,7 +30,7 @@ sed -i "7i uci set network.wan.gateway='192.168.0.1'" ./package/lean/default-set
 sed -i "8i uci set network.wan.dns='192.168.0.253'" ./package/lean/default-settings/files/zzz-default-settings  # 默认上游 DNS 地址
 # WAN6
 sed -i "9i uci set network.wan6.device='eth0'" ./package/lean/default-settings/files/zzz-default-settings  # 网络端口
-sed -i "10i uci set network.wan6.proto='dhcp'" ./package/lean/default-settings/files/zzz-default-settings  # dhcp
+sed -i "10i uci set network.wan6.proto='dhcpv6'" ./package/lean/default-settings/files/zzz-default-settings  # dhcp
 # LAN
 sed -i "11i uci set network.lan.ipaddr='192.168.255.1'" ./package/lean/default-settings/files/zzz-default-settings  # 默认 IP 地址
 sed -i "12i uci set network.lan.proto='static'" ./package/lean/default-settings/files/zzz-default-settings # 静态 IP
