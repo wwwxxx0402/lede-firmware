@@ -13,8 +13,10 @@
 name: Update Checker
 
 env:
-  REPO_URL: https://github.com/coolsnowwolf/lede
-  REPO_BRANCH: master
+  REPOS: |
+    https://github.com/coolsnowwolf/lede master 01
+    https://github.com/xiaorouji/openwrt-passwall-packages main 02
+    https://github.com/xiaorouji/openwrt-passwall main 03
 
 on:
   workflow_dispatch:
@@ -30,20 +32,42 @@ jobs:
     - name: Get Commit Hash
       id: getHash
       run: |
-        git clone --depth 1 $REPO_URL -b $REPO_BRANCH .
-        echo "commitHash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+        cd $GITHUB_WORKSPACE
+        mkdir -p TMP_SHA
+        cd $GITHUB_WORKSPACE/TMP_SHA
+        # 将 REPOS 按行拆分并遍历处理
+        echo "$REPOS" | while read repo_url repo_branch id; do
+          if [ ! -z "$repo_url" ]; then
+            echo "Checking $repo_url"
+            git clone --depth 1 "$repo_url" -b "$repo_branch" "$id"
+            cd "$id"
+            commit_hash=$(git rev-parse HEAD)
+            echo "SHA_$id=${commit_hash}" >> $GITHUB_OUTPUT
+            cd ..
+          fi
+        done
+        cd $GITHUB_WORKSPACE
+        rm -rf TMP_SHA
+
+    - name: Show Commit Head and Combination Heads
+      id: combHeader
+      run: |
+        echo "commitHash=\
+        ${{steps.getHash.outputs.SHA_01}}\
+        ${{steps.getHash.outputs.SHA_02}}\
+        ${{steps.getHash.outputs.SHA_03}}" >> $GITHUB_OUTPUT
 
     - name: Compare Commit Hash
       id: cacheHash
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: .commitHash
-        key: commitHash_${{ steps.getHash.outputs.commitHash }}
+        key: HEAD-${{ steps.combHeader.outputs.commitHash }}
 
     - name: Save New Commit Hash
       if: steps.cacheHash.outputs.cache-hit != 'true'
       run: |
-        echo ${{ steps.getHash.outputs.commitHash }} | tee .commitHash
+        echo ${{ steps.combHeader.outputs.commitHash }} | tee .commitHash
 
     - name: Trigger build
       if: steps.cacheHash.outputs.cache-hit != 'true'
