@@ -15,8 +15,8 @@ name: Update Checker
 env:
   REPOS: |
     https://github.com/coolsnowwolf/lede master 01
-    https://github.com/xiaorouji/openwrt-passwall-packages main 02
-    https://github.com/xiaorouji/openwrt-passwall main 03
+    https://github.com/Openwrt-Passwall/openwrt-passwall-packages main 02
+    https://github.com/Openwrt-Passwall/openwrt-passwall main 03
 
 on:
   workflow_dispatch:
